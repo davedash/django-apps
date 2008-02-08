@@ -1,0 +1,9 @@
+FR: {{failure_reason}}
+
+Url: {{url}}
+
+<ul>
+{% for pair in sreg %}
+  <li>{{ pair.0 }}: {{ pair.1 }}</li>
+{% endfor %}
+</ul>
