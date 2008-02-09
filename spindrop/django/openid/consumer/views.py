@@ -1,5 +1,8 @@
+from django.conf import settings
+from django.core.urlresolvers import get_callable
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
+
 
 from spindrop.django.openid import util
 from spindrop.django.openid.util import DjangoOpenIDStore, getViewURL
@@ -7,12 +10,6 @@ from spindrop.django.openid.util import DjangoOpenIDStore, getViewURL
 from openid.consumer import consumer
 from openid.consumer.discover import DiscoveryFailure
 from openid.extensions import sreg
-
-# from django import http
-# from django.views.generic.simple import direct_to_template
-# 
-# from openid.yadis.constants import YADIS_HEADER_NAME, YADIS_CONTENT_TYPE
-# from openid.server.trustroot import RP_RETURN_TO_URL_TYPE
 
 def getConsumer(request):
     """
@@ -101,5 +98,9 @@ def finish(request):
             # authentication failures. In general, the messages are
             # not user-friendly, but intended for developers.
             result['failure_reason'] = response.message
-
+        else:
+            if settings.OPENID_SUCCESS:
+                view = get_callable(settings.OPENID_SUCCESS)
+                return view(request, result)
+        
     return render_to_response("openid/results.html", result)
