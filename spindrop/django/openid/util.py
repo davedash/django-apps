@@ -176,3 +176,16 @@ def normalDict(request_data):
     can have at most one value.
     """
     return dict((k, v[0]) for k, v in request_data.iteritems())
+
+def normalize_openid(openid):
+    """
+    Once upon a time davedash.livejournal.com was the OpenID not 
+    http://davedash.livejournal.com/
+    
+    This function will convert the latter to the former.
+    """
+    
+    if openid.startswith("http://"):
+        openid = openid.replace("http://", "", 1)
+    
+    return openid.rstrip('/')
