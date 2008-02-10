@@ -4,11 +4,11 @@
   </head>
   <body>
 
-  {% if error %}
-  <p class="error">{{error}}</p>
+  {% if openid_error %}
+  <p class="error">{{openid_error}}</p>
   {% endif %}
 
-  <form method="post" action="{{ consumer_url }}">
+  <form method="post" action="">
     <input type="text"  name="openid_url" />
     <input type="submit" value="Begin" />
   </form>

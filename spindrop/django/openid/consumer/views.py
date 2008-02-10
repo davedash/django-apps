@@ -25,7 +25,7 @@ def begin(request):
     * show errors
     """
     form_template = 'openid/login.html'
-    
+ 
     if request.POST:
         openid_url = request.POST['openid_url']
         c          = getConsumer(request)
@@ -35,7 +35,7 @@ def begin(request):
             auth_request = c.begin(openid_url)
         except DiscoveryFailure, e:
             error = "Open ID error: %s" % str(e)
-            return render_to_response(form_template, {"error": error})
+            return render_to_response(form_template, {"openid_error": error})
         sreg_request = sreg.SRegRequest(optional=['email', 'nickname'])
         auth_request.addExtension(sreg_request)
         trust_root = getViewURL(request, begin)
@@ -43,7 +43,7 @@ def begin(request):
         url        = auth_request.redirectURL(trust_root, return_to)
         return HttpResponseRedirect(url)
    
-    return render_to_response(form_template)
+    return render_to_response(form_template, context_instance=RequestContext(request))
 
 
  
@@ -103,4 +103,4 @@ def finish(request):
                 view = get_callable(settings.OPENID_SUCCESS)
                 return view(request, result)
         
-    return render_to_response("openid/results.html", result)
+    return render_to_response("openid/results.html", result, context_instance=RequestContext(request))
