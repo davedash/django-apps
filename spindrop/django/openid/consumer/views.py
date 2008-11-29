@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.urlresolvers import get_callable
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
-
+from django.template import RequestContext
 
 from spindrop.django.openid import util
 from spindrop.django.openid.util import DjangoOpenIDStore, getViewURL
@@ -35,7 +35,7 @@ def begin(request):
             auth_request = c.begin(openid_url)
         except DiscoveryFailure, e:
             error = "Open ID error: %s" % str(e)
-            return render_to_response(form_template, {"openid_error": error})
+            return render_to_response(form_template, {"openid_error": error, "openid_url": openid_url}, context_instance=RequestContext(request))
         sreg_request = sreg.SRegRequest(optional=['email', 'nickname'])
         auth_request.addExtension(sreg_request)
         trust_root = getViewURL(request, begin)
@@ -60,7 +60,7 @@ def finish(request):
         request_args.update(util.normalDict(request.POST))
         
     result = {} 
-    
+
     if request_args:
         c = getConsumer(request)
 
@@ -71,9 +71,11 @@ def finish(request):
 
         # Get a Simple Registration response object if response
         # information was included in the OpenID response.
-        sreg_response = {}
+        the_sreg = None
         if response.status == consumer.SUCCESS:
             sreg_response = sreg.SRegResponse.fromSuccessResponse(response)
+            if sreg_response:
+                the_sreg = sreg.items()
 
         # Map different consumer status codes to template contexts.
         results = {
@@ -86,7 +88,7 @@ def finish(request):
             consumer.SUCCESS:
             {
                 'url': response.getDisplayIdentifier(),
-                'sreg': sreg_response.items()
+                'sreg': the_sreg
             },
         }
 
