@@ -125,7 +125,7 @@ class DjangoOpenIDStore(OpenIDStore):
 
 def getViewURL(req, view_name_or_obj, args = None, kwargs=None):
     relative_url                           = reverseURL(view_name_or_obj, args=args, kwargs=kwargs)
-    full_path                              = settings.get('LOGIN_HOST', '') + relative_url
+    full_path                              = settings.LOGIN_HOST + relative_url
 
     return urljoin(getBaseURL(req), full_path)
 
@@ -139,7 +139,7 @@ def getBaseURL(req):
     standard (80, 443).
     """
     
-    name = req.META['HTTP_HOST']
+    name = settings.LOGIN_HOST
     
     try:
         name = name[:name.index(':')]
