@@ -9,6 +9,7 @@ from openid.store import nonce
 from openid.store.interface import OpenIDStore
 
 from consumer.models import Association, Nonce
+from django.conf import settings
 
 class DjangoOpenIDStore(OpenIDStore):
     """
@@ -124,7 +125,7 @@ class DjangoOpenIDStore(OpenIDStore):
 
 def getViewURL(req, view_name_or_obj, args = None, kwargs=None):
     relative_url                           = reverseURL(view_name_or_obj, args=args, kwargs=kwargs)
-    full_path                              = req.META.get('SCRIPT_NAME', '') + relative_url
+    full_path                              = settings.get('LOGIN_HOST', '') + relative_url
 
     return urljoin(getBaseURL(req), full_path)
 
